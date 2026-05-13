@@ -1,994 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ZentrumHub — The Travel Tech Advantage</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          cave: { 950:'#020617', 900:'#0f172a', 800:'#1e293b', 700:'#334155', 600:'#475569' },
-          fire: { pink:'#e91e8c', magenta:'#c2185b', purple:'#7b2d8b', violet:'#5b21b6' },
-          glow: '#f472b6'
-        },
-        fontFamily: {
-          display: ['Syne','sans-serif'],
-          body: ['DM Sans','sans-serif']
-        }
-      }
-    }
-  }
-</script>
-<style>
-  :root {
-    --pink: #e91e8c;
-    --purple: #7b2d8b;
-    --violet: #5b21b6;
-    --glow: #f472b6;
-    --cave-950: #020617;
-    --cave-900: #0f172a;
-    --cave-800: #1e293b;
-    --cave-700: #334155;
-  }
-  /* LIGHT MODE OVERRIDES */
-  body.light-mode {
-    --cave-950: #f8fafc;
-    --cave-900: #f1f5f9;
-    --cave-800: #e2e8f0;
-    --cave-700: #cbd5e1;
-    color: #1e293b;
-  }
-
-  body.light-mode nav {
-    background: rgba(248,250,252,0.9) !important;
-    border-bottom-color: rgba(203,213,225,0.7) !important;
-    color: #1e293b !important;
-  }
-  body.light-mode nav a { color: #475569 !important; }
-  body.light-mode nav a:hover { color: #0f172a !important; }
-  body.light-mode .stat-card {
-    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(241,245,249,0.9) 100%) !important;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-  }
-  body.light-mode .glow-border {
-    border-color: rgba(233,30,140,0.25) !important;
-    box-shadow: 0 2px 20px rgba(233,30,140,0.07) !important;
-  }
-  body.light-mode .compare-table th { color: #64748b !important; }
-  body.light-mode .compare-table td { border-top-color: rgba(203,213,225,0.6) !important; }
-  body.light-mode .compare-table tr.highlight-row td { background: rgba(233,30,140,0.04) !important; }
-  body.light-mode .compare-table tr:hover td { background: rgba(0,0,0,0.02) !important; }
-  body.light-mode .section-divider {
-    background: linear-gradient(90deg, transparent, rgba(123,45,139,0.2), rgba(233,30,140,0.2), rgba(123,45,139,0.2), transparent) !important;
-  }
-  body.light-mode a.source-link { color: #9333ea; }
-  body.light-mode a.source-link:hover { color: var(--pink); }
-  body.light-mode .text-slate-400 { color: #475569 !important; }
-  body.light-mode .text-slate-500 { color: #64748b !important; }
-  body.light-mode .text-slate-600 { color: #94a3b8 !important; }
-  body.light-mode .text-slate-300 { color: #334155 !important; }
-  body.light-mode ::-webkit-scrollbar-track { background: #f1f5f9; }
-  body.light-mode [style*="background:rgba(30,41,59"] {
-    background: rgba(255,255,255,0.8) !important;
-  }
-  body.light-mode [style*="background:rgba(15,23,42"] {
-    background: rgba(248,250,252,0.95) !important;
-  }
-  body.light-mode body::before { opacity: 0.15; }
-
-  /* SMOOTH THEME TRANSITION */
-  body, body * {
-    transition: background-color 0.35s ease, border-color 0.35s ease, color 0.2s ease, box-shadow 0.35s ease;
-  }
-
-  /* THEME TOGGLE BUTTON */
-  #theme-toggle {
-    position: fixed;
-    bottom: 28px; right: 28px;
-    z-index: 999;
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    border: 1.5px solid rgba(233,30,140,0.4);
-    background: rgba(15,23,42,0.9);
-    backdrop-filter: blur(12px);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem;
-    box-shadow: 0 4px 24px rgba(233,30,140,0.2), 0 2px 8px rgba(0,0,0,0.4);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.35s ease !important;
-  }
-  #theme-toggle:hover {
-    transform: scale(1.1) rotate(12deg);
-    box-shadow: 0 6px 32px rgba(233,30,140,0.35), 0 2px 8px rgba(0,0,0,0.3);
-  }
-  body.light-mode #theme-toggle {
-    background: rgba(255,255,255,0.95);
-    border-color: rgba(233,30,140,0.35);
-    box-shadow: 0 4px 24px rgba(233,30,140,0.15), 0 2px 8px rgba(0,0,0,0.1);
-  }
-
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--cave-950);
-    color: #e2e8f0;
-    font-family: 'DM Sans', sans-serif;
-    overflow-x: hidden;
-  }
-
-  /* NOISE TEXTURE OVERLAY */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 0; opacity: 0.4;
-  }
-
-  /* MESH GRADIENT BG */
-  .mesh-bg {
-    background:
-      radial-gradient(ellipse 80% 60% at 10% 20%, rgba(123,45,139,0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 90% 80%, rgba(233,30,140,0.12) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(91,33,182,0.08) 0%, transparent 70%),
-      var(--cave-950);
-  }
-
-  /* GRADIENT TEXT */
-  .grad-text {
-    background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 50%, #a78bfa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .grad-text-warm {
-    background: linear-gradient(90deg, #f9a8d4 0%, var(--pink) 50%, var(--purple) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* GLOWING BORDER */
-  .glow-border {
-    border: 1px solid rgba(233,30,140,0.3);
-    box-shadow: 0 0 20px rgba(233,30,140,0.08), inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-  .glow-border:hover {
-    border-color: rgba(233,30,140,0.6);
-    box-shadow: 0 0 40px rgba(233,30,140,0.15), inset 0 1px 0 rgba(255,255,255,0.08);
-    transition: all 0.3s ease;
-  }
-
-  /* PULSE BADGE */
-  .pulse-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--pink);
-    box-shadow: 0 0 0 0 rgba(233,30,140,0.6);
-    animation: pulse-ring 2s infinite;
-    display: inline-block;
-    margin-right: 6px;
-  }
-  @keyframes pulse-ring {
-    0% { box-shadow: 0 0 0 0 rgba(233,30,140,0.6); }
-    70% { box-shadow: 0 0 0 8px rgba(233,30,140,0); }
-    100% { box-shadow: 0 0 0 0 rgba(233,30,140,0); }
-  }
-
-  /* STAT CARD */
-  .stat-card {
-    background: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.9) 100%);
-    border-radius: 16px;
-    padding: 28px 24px;
-    position: relative;
-    overflow: hidden;
-  }
-  .stat-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 2px;
-    background: linear-gradient(90deg, transparent, var(--pink), transparent);
-  }
-
-  /* TABLE */
-  .compare-table th { font-family: 'Syne', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: #94a3b8; padding: 14px 16px; }
-  .compare-table td { padding: 14px 16px; font-size: 0.875rem; border-top: 1px solid rgba(51,65,85,0.5); }
-  .compare-table tr.highlight-row td { background: rgba(233,30,140,0.06); }
-  .compare-table tr.highlight-row td:first-child { border-left: 2px solid var(--pink); }
-  .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-  /* DONUT LABEL */
-  .donut-center {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center; pointer-events: none;
-  }
-
-  /* SECTION DIVIDER */  .section-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(123,45,139,0.4), rgba(233,30,140,0.4), rgba(123,45,139,0.4), transparent);
-    margin: 0;
-  }
-
-  /* PILL */
-  .pill {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 4px 12px; border-radius: 999px;
-    font-size: 0.7rem; font-weight: 600; font-family: 'Syne', sans-serif;
-    letter-spacing: 0.06em; text-transform: uppercase;
-  }
-  .pill-green { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
-  .pill-pink  { background: rgba(233,30,140,0.15); color: #f9a8d4; border: 1px solid rgba(233,30,140,0.3); }
-  .pill-amber { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
-  .pill-red   { background: rgba(239,68,68,0.12);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
-
-  /* FADE IN */
-  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-  .fade-in.visible { opacity: 1; transform: translateY(0); }
-
-  /* NAV */
-  nav { position: sticky; top: 0; z-index: 50; backdrop-filter: blur(16px); background: rgba(2,6,23,0.85); border-bottom: 1px solid rgba(51,65,85,0.4); }
-
-  /* HERO LINE */
-  .hero-line { height: 1px; background: linear-gradient(90deg, transparent, var(--pink), var(--purple), transparent); }
-
-  /* CHART CONTAINER */
-  .chart-wrap { position: relative; }
-
-  /* ICON CIRCLE */
-  .icon-circle {
-    width: 48px; height: 48px; border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(135deg, rgba(233,30,140,0.2), rgba(123,45,139,0.2));
-    border: 1px solid rgba(233,30,140,0.25);
-    font-size: 1.3rem;
-    flex-shrink: 0;
-  }
-
-  a.source-link {
-    color: #c084fc;
-    text-decoration: underline;
-    text-decoration-style: dotted;
-    text-underline-offset: 3px;
-    transition: color 0.2s;
-  }
-  a.source-link:hover { color: var(--glow); }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--cave-950); }
-  ::-webkit-scrollbar-thumb { background: rgba(123,45,139,0.5); border-radius: 3px; }
-
-  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-  .float { animation: float 5s ease-in-out infinite; }
-
-  @keyframes shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
-  .shimmer-text {
-    background: linear-gradient(90deg, var(--pink), #a78bfa, var(--pink));
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 4s linear infinite;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZentrumHub Strategic Landscape</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .chart-wrapper { position: relative; width: 100%; height: 400px; min-height: 400px; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .indicator-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    </style>
 </head>
-<body class="mesh-bg">
+<body class="bg-slate-100 text-slate-900 min-h-screen">
 
-<!-- THEME TOGGLE BUTTON -->
-<button id="theme-toggle" aria-label="Toggle theme" title="Toggle dark / light mode">☀️</button>
+<div class="max-w-7xl mx-auto px-4 py-8 md:px-8 space-y-10">
+    <header class="text-center space-y-4">
+        <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900">
+            ZentrumHub <span class="text-blue-600">Strategic Position</span>
+        </h1>
+        <p class="text-lg md:text-xl text-slate-600 max-w-4xl mx-auto">
+            A comprehensive analysis of market pain points, competitive benchmarking, and growth strategies against key rivals: TravelgateX, QTech, dcs plus, Gimmonix, and Juniper.
+        </p>
+    </header>
 
-<!-- NAV -->
-<nav>
-  <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-    <img src="data:image/jpeg;base64,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" alt="ZentrumHub" class="h-9 object-contain" onerror="this.style.display='none'; document.getElementById('logo-text').style.display='block'"/>
-    <span id="logo-text" style="display:none" class="font-display font-800 text-xl grad-text">ZentrumHub</span>
-    <div class="hidden md:flex items-center gap-8 text-sm font-body text-slate-400">
-      <a href="#market" class="hover:text-white transition-colors">Market</a>
-      <a href="#compare" class="hover:text-white transition-colors">Compare</a>
-      <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
-      <a href="#mapping" class="hover:text-white transition-colors">Mapping ROI</a>
-      <a href="#strategy" class="hover:text-white transition-colors">Strategy</a>
-    </div>
-    <span class="pill pill-pink"><span class="pulse-dot"></span>Live Intelligence</span>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="relative pt-24 pb-20 px-6 overflow-hidden">
-  <!-- BG CIRCLES -->
-  <div style="position:absolute;top:-120px;right:-120px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(123,45,139,0.15),transparent 70%);pointer-events:none;"></div>
-  <div style="position:absolute;bottom:-80px;left:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(233,30,140,0.1),transparent 70%);pointer-events:none;"></div>
-
-  <div class="max-w-7xl mx-auto relative z-10">
-    <!-- LOGO BLOCK -->
-    <div class="flex justify-center mb-12">
-      <div class="float" style="background:rgba(15,23,42,0.7);border:1px solid rgba(233,30,140,0.25);border-radius:20px;padding:20px 40px;box-shadow:0 0 60px rgba(233,30,140,0.1);">
-        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/7QFUUGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAATgcAVoAAxslRxwCeAAPWmVudHJ1bUh1YiBMb2dvHAJaAAhORVcgWU9SSxwCdAABABwCZQABABwCUAAISGFuZC1vdXQcAl8AAk5ZHAIZABxUcmF2ZWwgVGVjaDsgaG90ZWwgbWFya2V0aW5nHAJpAA9aZW50cnVtSHViIExvZ28cAgUAD1plbnRydW1IdWIgTG9nbxwCNwAKMjAyMjowNTozMBwCcwAKWmVudHJ1bUh1YhwCbgAKWmVudHJ1bUh1YhwCZwABABwCegACQ04cAigADFNlZSBSZWxlYXNlIBwCFAA7V2Vic2l0ZURpc3RyaWJ1dGlvbnxFbnRlcm1lZGlhRGlzdHJpYnV0aW9ufFBSTkFyY2hpdmVfMVllYXIcAg8AE1RSQSxDUFIsU1RXLEFEVixIUlQAAAD/4gIcSUNDX1BST0ZJTEUAAQEAAAIMbGNtcwIQAABtbnRyUkdCIFhZWiAH3AABABkAAwApADlhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApkZXNjAAAA/AAAAF5jcHJ0AAABXAAAAAt3dHB0AAABaAAAABRia3B0AAABfAAAABRyWFlaAAABkAAAABRnWFlaAAABpAAAABRiWFlaAAABuAAAABRyVFJDAAABzAAAAEBnVFJDAAABzAAAAEBiVFJDAAABzAAAAEBkZXNjAAAAAAAAAANjMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0ZXh0AAAAAEZCAABYWVogAAAAAAAA9tYAAQAAAADTLVhZWiAAAAAAAAADFgAAAzMAAAKkWFlaIAAAAAAAAG+iAAA49QAAA5BYWVogAAAAAAAAYpkAALeFAAAY2lhZWiAAAAAAAAAkoAAAD4QAALbPY3VydgAAAAAAAAAaAAAAywHJA2MFkghrC/YQPxVRGzQh8SmQMhg7kkYFUXdd7WtwegWJsZp8rGm/fdPD6TD////bAEMABAIDAwMCBAMDAwQEBAQFCQYFBQUFCwgIBgkNCw0NDQsMDA4QFBEODxMPDAwSGBITFRYXFxcOERkbGRYaFBYXFv/bAEMBBAQEBQUFCgYGChYPDA8WFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFv/AABEIAJEBkAMBEQACEQEDEQH/xAAdAAEAAQQDAQAAAAAAAAAAAAAACAEGBwkCBAUD/8QAXRAAAQIFAQQEBwcNCgsJAAAAAQIDAAQFBhEHCBIhMQkTQVEUIjJhcYGRFThCUnahtBYjNjdicnR1grGzwdMkMzljZHOSlKKyGBklJihUVpWWxNE1Q1Nnk8LS4fH/xAAcAQEAAgMBAQEAAAAAAAAAAAAABQYDBAcCCAH/xAA+EQEAAQMCAwQIBAQEBgMAAAAAAQIDBAURITFRBhJBcRMiMmGBkaHRB0KxwRQjM+EVUpLwFiRTcrLxYoLC/9oADAMBAAIRAxEAPwCf0AgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEBxK0g8TzgbrevW/rMtFrfuS5adTT2NvvjrFehAyo+oRmtY969O1umZbuJpuZmTtj25q8o4fPkxVc+1XpnILUinN1erqScBUvKdUg+hThT+aJC3o2TVzmIWGz2K1SuIm53aYnrPH6LWnNsamJXiUsGddTnm9U0Nn2BCo2P8AAK553I+TejsNciON+P8ATP3fNrbIkysB3T2YQntKaslR9haEev8Ah6r/AKn0Y6uxVcRwvx/p/uuChbXFgzSwip0Wu07PNQaQ+kf0FZ+aMNzQsin2aoloXuyeZRxpqpn6Mm2PrBptdiktUW7qe4+rAEu+vqHc9wQ5gn1ZiPu4WRa9qiUNk6Vm439S3O3XnC9esRnGfmjVR7kCCMiArAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAUUccYCwdZtX7O03kyK1PddUFp3mabK4XMODHAkckJ+6Vgd2Y3MXBvZM+pHDqndG7O5+rVfyKdqY51Twpj7/BE/VTaR1Bu1x2Wpc19TlNXkBmQWevUn7t7yv6O6IsWPpOPa41etPvdP0zsVpuFEVXqfSV+Mz7Pwj/2xHian5/gH5qbfPncdcJ9pMSe8U09I+SyV9y3RxmIpjyiPsv21tDdVrgbS7J2bOsNLGQ5PKTKpI/LIPzRqXdSxbc+tXv5cVcy+0mlWN4qvRM+7j+n3XhIbJ+psw1vvTlvSqviOzriiP6LZEalWuY0comUJc7Z6bE+rTVPwj7vvNbJOpDaCpurW27jkEzTwJ9rWPnhGvY3jEsH/GGBVPGmqPhH3WvcWzrq5SG1OfUwmfbT20+bbeJ8+7kK+aNm1q+JXPtbebLR2i0y7w9JtPviWN69SKrRp7wOtUycp8wD+9TjCmlZ9CgMxI0XaLkb0VRMN6m7avU961X3o9y9dMNadQrEcabplcdm5Bs8afUCX2CO4ZO8j8kiNTI03GyI2qp2nrCIzdKxMmJ71O09Y5pU6HbR1n3wtilVXdt+tOYSmXmXAWJg/wAU7wGT8VWD3ZitZmk38f1o9alT87R7+P61PrU9WZ0KzETCIco/QgEBaupuolp2BSUz90VZuUDmQyyElbz5HYhA4n08h2mM9jGu36u7bjdIabpObqVyaMW3NW3OfCPOWJk7Xen5nerNDuFLOcF7qGTjz7vWZiTnQ8jbfeN09e7G51qnequnfpvP2Ze00v2179pHula9VanWkEB5vBQ6wojyVoPFJ+buiMyMa7j1d25Gys5OJexq+5djaVyxga5AIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIDitSd0gmAjhtQbRaLdembUsV5qYqyMtzdR4Lbkj2pb7FuDv5J855TWn6X6Ta7e5dOro/ZXsRVmRTmahE02/CnlNUdZ6R+qJi1VWvV3eWZyp1OoPczvPPzDh9pUTFk2pt09Ih1mabGNZ2iIoopjyiI/wB/VIbRbZSqVTbZquoM45TmF4WKXKKBfUO5xziEegZPnEQ2XrVMT3bMb++XNdZ7e27cza0+mKp/zTyjyjx+KS1g6fWhZcoGLZt+SkDjCnkN7zzn3zisqPtiAv5N69O9yrdzjN1TOzqu9k3Zq92/D5LowO6MLQIBAMDugPMuWg0e4KcuQrdKk6jLLyCzNMpcT844eqPdFyuid6Z2lktXrlqrvUVTE+5H/WHZQolQadn7AmzSZvioSE04XJVfmSritv8AtD0RN4muXKPUvx3o6+KwYnaK7TtTkRvHWOaLF8WtcFnV5yjXJSn5Cbb49W4PFcTnAUhQ4KT5xFlsX7d+nv253hZbWRbyaO/aq3hmfZp2jalay5e275mHp+hnDbM8slb8gPuu1xsd3lJ7MjhERqOkU3d7tiNqunVAajpNFze7Z4VdOqZVKn5Oo05iekZlqZlplsOMvNKCkOJPEKBHMRVKommdp5qtNM0ztLsx+Px8KlNsyUg/NvqKWpdpTrh7kpBJ+YR+0x3piIe7Vuq5cpt085mI+fBra1ZvKp37fk9ctTdUVTLhEu0T4suyCdxtI7ABjPeSTF4xLFNi1FFP/t9LYWj2dJwaMS1HKOM9avGfj+my2jzjboV7UPFdWi18VPT7UKQuGnvLS2hxLc6wFYTMMFQ30KHI8OI7iAYxZeJTk2aqKufh5qJq9mm9RNMtkUk62/LIeaXvtupC0K7wRkH2RQJiYnaVCng+sAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEBxWrd4wEcNtHWxy323bEtSb3aq+3/AJSnGlcZNtQ/e0nscUDkn4IPeeE1pen+kn012OEcve6Z2G7JRmTGo5lP8uJ9WJ/NPWY6R9UV7Ftit3hdEtb9vySpqemid1IOEoSPKWtXwUjtP5zgRYb16izR3652iHV9S1DHwMarIyatqaf97RHjM9I806NnrRS3NNKSiaSE1CvvN4maktHFOeaGgfIR857e4VLMz7mTPPano4F2h7UZesXJpme7ajlT+9XWfpHgyglIB4RoqzCsAgEAgEAgKEZI48oC2NUrBtq/raco1ySCZhogll5PB6WX8dtfNJ+Y9oMZ8bJu49fftzs2MbJu41fftzsgjr3pXXdLrmEpPgzVMmlFUhUUIIQ+kfBV8VwdqfWMiLrgahbzKO9E7VeMLfh51vLo3idqvGF67IOtT1jVlq1rjmVLtucdw264c+5rpPljubUT4w7PKHbnS1bTYv0zdtR68fVH6nhU3afSW49aPqm8w4l1AWhSVIUMpUk5BHYcxUPHZWHSueRNSt+fpyVhKpyVdYBPwd5BTn549UT3aolnxL3oMii7/lmJ+U7tY9WkJql1OYps6ypmZk3VMvtqHFC0nBHtEXy3VFVMVRyfUmRft5FuLtud6aoiYn3TxdY84zUKZqHi7VCpc3XK1KUWQZU9NVF9Esy2kcVKWQkfnz6oyXLlNuia6uUKRqVUUxNUtnlDlBIUiWkQreEsyhoK791ITn5o5zVV3qplz+Z3nd248vwgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgB5QGPNpXUWX0401mKw2pC6lMky1MZVyW8R5RHalIyo+gDtjbwcX+IvRR4eKx9l9Br1rUabE/0441T0pj955Nf4FUr9wAfX5+pVKZx8ZyYeWr5ySYuW9FFHSIj5Q+j6/4fEsbztTboj4REJ57MGk8hplZwS+209Xp9CV1KaAzg8wyg/ET85ye7FRz8yrJub/ljk+dO1PaO5rWXvTwtU+zH7z75/syhGgrBAIBAIBAIBAIBAW/qXaFFve0Jq3K7KB+Umk4yngtpfwXEHsUk8Qf1Rmx79di7FyjnDLZvV2a4roni15au2PVtPL7nLZrAClsHfYmEpwmaZPkuD09o7CCOyL7iZNGTZi5T8fdK3WsijItRcpSg2C9UlV6312FW5orqNIZ36c44cqflRw3POps4H3pHcYrWt4Poq/T0R6s8/NA6njdyv0lPKUjOBHLOYgUUwVtH7O0lqDUV3Fb821Sa64MTAdQSxOYGAV44pXjhvAHPDI7YlcHU6seO5XG9P6Lt2d7Z39Nsxi5ETXajlx40+6N+ce5glOy7q4qe6g02lhvex4Qamnc9OMb3zRNxrOJEb7z8k9l9rNLu070VTvP/AMf7s+7NGz3TtOp0XBXZpqq1/dKWnEIIYkwRg9WDxKiOG8ccOQGYhtQ1WvJjuURtT9Z81D1PVqsue7RG1P1lm4DA4DERCHVgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEBRfkGAgZtnX0q8dX5mSlnt+mW+VSUtunxVuA/XV+tQx6ECLdpWP6GxFW3GeL6L7BaJTpukUXa42ru+tPl+WPlx+K/Oj905bnak/qJVGQpuScVK0pKhwLuMOO/kghI85V3RpazlbRFijx4yrP4la7NqinTLM8avWr8vCPjzn3bJbITunn2RXt3GnKAQCAQCAQCAQCAQCAwttrabovXTR2sSDAVWrfQqZYKR4zzIGXWvPwG8POnzxLaPmzj34pqn1av1SGm5PobvdmeFSF2nNzz1m3xS7opisv06YS7u5x1qOS0HzKSSPXFvyLFN+1NqrxTt+3TcpmirxbK7YqsnXbdkazTnQ7KVCXRMML70LSFD18Y55Xbqt1zRVzjgqdVM0ztLvx5fhAIBAUWd1JPdARn1j23dL9NtTaxY9colzv1CizHUPuSssyppSt1KspKnAcYUOYgLZ/xiujP+zt4/1Nj9rAVHSKaNHlbl5H0SbH7WAuHSbbj0t1B1Io1lUehXSzP1ybTKy7kzKspaSpWcFRDhIHDsEBJxBzAVgEAgEAgEAgPMvK4KPatrz1xXBPtyFMprJfm5p3O6y2OajgEwFsaS6w6a6mzU7K2Fd8jXXqc2hybRLBYLKVEhJO8kcyD7IC+hygEAgEAgEAgEAgEAgEAgLU1pucWfpbXbiC8OyMktTGTzdI3Wx/SUIz41r0t6mjrKW0HTv8S1SxieFVUb+XOfpDXDLtTdRqbUu3vPzc28ltPHJccWrA9pMXb2Kd/CH1Tdqt2LU11cKaePlER+m0NkFhUOQsDSmQpDTeWaLT/rpQOLi0pKnFelSt4+uKPfuzeu1Vz4vlHV9Qr1HPu5dznVMz5R4R8IYj2dNr7TrWXUpmybao9xStQelXZlK56XaS0EtgFQJSsnPHhwjEjkhE53eMAWcJzARv1a2z9NdPNYahpzWaLcr1Tps01LOuysu0plSnEIWCklwHGHB2d8BJGAQCAQFFcuEBFZe2xRUbS7mjv1BVEzTdzqoHuh7ot9WVB8s9bubucZGcZzASpHKArAcXEJUhQKQQRggjgYeQ1ybRdoix9ZK3QmU7soH/AAqS/mHfHSB6MlP5Ji/adkfxGJRV8PktGNe9LYpqSi6P26V1nRt2gvuFT1vzqmUDuZc+uI9hKx6hFb16z6PJi5/mj6whdQt927v1Z7iFaJAIBAUWneSU98BgrUzZB0Pv6+6neFzUCoTNWq73XTbrdWfbSpW6E8EpVgcEjlAeCdhLZyAz9S9U/wB9zH/ygI5dIHpTs16H2SikW7bc6/etabzINLrUwtMiznCplxO9xGQUoSfKOTySYDxeil0Hq136nSmrFUD8jb9rzW/Iq3cGozgBG6kn4CN7KiOZwkduA2c+SO+At6/b+smyJNM1eF2UWhNODLaqjPtsdZ96FEFXqgPDsnW/SG8KkmnWzqRbNSnXFbqJVmpNh5Z+5QohSvUIC/knIzAUWsIGVEAZxxOIDip5CUFZUndAJKs8ABzgPGavS0nZ0STVz0VyaUrdDCakyXM/e72YD3EnMBhnbyq9La2U9QKc7UpNucct97cl1zCEuKzjGEk5OcHsgIkdC3VKbSr0v5VTqMpJpckJIIMzMIa3iHHc43iMwGxaTnZablETUq+08w4neQ624FIUO8KHAwH1S6knAIPoOYDzfqkoHu17j+7dNFQzjwPwxvr/AP0873zQHOvXDQqH1Xu1WadTevz1Xhk22z1mOe7vEZxkcu+A7NKqEjU5Fudps5Lzks8CW35d1LjawDjgpJIPEEQH0nJhiUlXJmZebZZaSVuOOLCUoSBkkk8APOYDzqFdFuVuYWxRq9S6i62jfW3KTrbykpzjJCSSBk84D01OBPlYHpOIDhMTTDEsuYfdbbZbTvLcWsJSkd5J4AQHm0e6rbq84ZSlV+lz0wASWpWeadWAOfipUTAem/MNMsredWltttJUta1BKUgdpJ5QHl0q7bYqc74HTrhpM3Mcupl59pxee7dSomA9hKt7sgMBdIXWDJaPSdJSSFVWqoSoZ8pDaVLP9rc9kS+jURVf73SHSPwuxIu6zXen8lE/OZiP03R42QqGmvbQlvMuo3mZJ1c84P5pBUn+3uRNanc9Hi1bc54Oo9us2cTQL80zxq2pj/7TtP03TvvX7Cqrn/UH/wBGqKc+ZmrfojPfjyH4lnf7iYDa8OQgOLvkGA1D7e38IFdX46kv0EtAbeScQHi0+8bUn6kinSNzUaZm3FFKJdmotLcURnICQrJIweyA9uA8qvXLbtDfQxWa9S6c66nfQicnW2VKTnGQFEZGYDvyczLzko3NSr7b7DyAtp1pYUhaTxCgRwII7RAalH/4U6YP/mo59PVAbRNQ9T9O7CKU3netCobixlDU/PttOrHelBO8fUIDjp3qppvfjhas2+KDXHkjeUxIz7bjqR3lsHeHsgLuBynIgIjdJFQks1+2rlbRxmmHpF5QHMoIWjJ9C1+wxaOz13emu35SmdKr3pqo6PJ6OesGU1Xq1FUr63UqV1gGea2nAR/ZWqM3aC3vj019J/V+6lTvRFXRNCKihSAQCAQCAxxtP6v27otpTPXhXnA66kFmnSAXhyfmSDuNJ7h2qV8FIJ7shrJ0Ssa/NrvaYnalX595TT7yZy4KoEnckZYHCWmgeAJA3G09mCTkJMBtmsW2aHaFoU22rdp7UjS6VLJl5SXbHBtA/OTxJJ4kkk84DF+3RrY3odok/cMmhl+vVF3wGiy7oygvqSSXFjtQhIKiO07o7YCC2y7s3X/tS1Of1Jv+756VpL0ypo1SYT4RN1B0eUllJISltOcZ8kHxUg4OAyDtC9HybZsOcuTTC66nVp+lsmYXS6k0jrJlKBvK6lxsDC8DKUlPHlnOIC9eik2ia5erMzpPe1Scn6lS5XwmjT8wsqemJdJCVsuKPFSkZSUk8SkkHyRAXB0zEw/LbM9Fcl33Glm6WBvNrKTjweY7oCIOz5K6+66WTL6MWJUHJe3KU67OVN9c04xLlTq8gzToypY4YQ2kHkTg8SAu7VvYI1VsqxJu6KdXKHXzTGFTE3JSQcafCEDKi1vpwsgAnGQTjhk4EBkPojddbonb1mdIbmqszUqc7IuTlEcmXC45KrbwVspUo53FIJUB8Ep4czAXR0nOzbPXZN1/W9u65aUl6DbyN6mKkFLce6kqPB0KATnf7uGICKOxfs8Tm0FWq9ISd0y9DNCYYeUt+SMx1wcUoYACk4xufPAbEbrseZ0u6Oy5bHcqaZ1+gWNU2fDWWiyHFdS8veCckp8rv7IDWloTq/flk0W5Lest6fVW7yZlqaxNsOrXMy6Q4SUsJGT1jm8lAI4jJxxwQGdNEdiXXpq97avyue4Uh4JWJWozUpO1Rap7cS8hxe9uIUnfwDwK854GAvjpwB9b04O6PLqXMfg8BIfo1QBsS2IQAMy0zyH8regL62ogDs337kAj6mZ/n+DrgIH9Cfg673ZkD7Gh2fylmAzF00cw/LaD2suXfdZUbkAJbcKSR4O7w4GAi9s8WlrjtHWDI6W21UW5CzrWccenpubmHES7j761LBdxlTy8ZCUAYSBk43skPP2l9mzU3ZvVSruVWpWZkXJsNS9ZozrjLkpMYKkpUCApBISohQJB3SDjgCF2S13bQG2jVKTYNLm2ZSnUGnNGsO9epiTedHimamt0ZWtZ8lsAgHewB4xgLe2ndkrUfQe1pe9nazTKrS2phDL05S1OtOyLijhClBQBCSeAUk8yAQMiAmd0WOsdw6o6K1Cl3ZPLqFYtWcRKmedXvOzMu4jeaLh5qWClaSrtATnJySHw6SeaUkWlJBXiqVNvY846pP64ntDj1q5dl/CS1H/OXP8Asj/yWr0eEmh/WKpzShxlaKvdPcVOtpja1qraxTHvS34p3pp0i1RH5q4+kSl7ev2FVX8Af/RqiruCNR3R36i2jpdtJSl2XtU1U6ktUuaZU+mXW8d9aAEjdQCeOO6A2Ajbd2bQMfV67/uab/ZwFF7bmzaU4F+u/wC5pv8AZwGu7aqvG37/ANsqt3fas8Z2kVSrSi5SYLSm+sSlphBO6oAjxkqHEdkBuXVy9cBqL2Fcf4w+2xupwK3P44D/AMGYgNuifJHogNbPTZYGtFoHAz9T7nZ/KVwE49ksAbL+ngAAH1K0/gB/J0QGqHaMrlTtnbXvm4KK+GKlTL3n5mTe6sL6t1E0spVungSDg8YCSmlOwbdmodFF8av3/UJCt1xIm3JREv4VNo3+OZh1xQwvGMoAO7yzwxAYv2tdle9NnMSV/W1c79UorM0hCKnLIVKzlNePkb4So4BPALScZ4EDIyE2Ojn11m9atF1fVA8ly57ceRJ1VaQE+FJKctTGBwBWAoKxw3kKIwCBAcukalG3NHqVNnypatthPf4zTiT+r2RPdn6tsmqnrCT0udrs+TBGxFMGX2kaEBnDzMy0r1sqP6omtap3wavg28/jZlPscoo6BIBAIBAeXelxUa07Wn7juCfZkKZTJdUxNzLysJaQkcT5z2ADiSQBxMBqZ17v++trnaVk6Xbci8qXdfMlblKUrxZRjOVPukcEkgb7iuwADiEiA2YbLOjtvaK6USdo0MJemf36qVEo3XJ+ZI8Zw/cjklPYkAc8khkk8EY80Brq6berTTl/2JRSpQlpemTU2E58UrcdSgnHeA0PbAeFoLtZ6uaf6P2/aFtaLy87TKVJhuXmxJzp8JySpTpKBukqUokkcOJgLuVty68KThWhTBB5jwKf/wCkBhnYYkL0pW23adxrtKr0uWnau+h9Jp76GWW30OpKd5Scbo3+Ge4QErOmg97DRPlSx9HmICvQyU+Va2YavOtMoTMTV0Ph53HjLCGGAkZ7hlWPSe+Al1NNIfllsupStDiSlSVDIUCMEQGp/opwBtvUcAcBJ1H9AuA2FbdnvP8AUP5Pv/qgIi9CF9m+oP4ukf0jsBM7a/8Aep6k/JCp/RXIDX90Otn064NpKfr1RYQ8baoy5mTSsZ3JhxxLSV+kJLmO4nPZAbRkjCAPNAQE6cL9503+/qX/AC0BIfo1feS2J+DTP0t6Avnai97ffvyZn/o64CB/Qm/b3uz5ND6S1AZd6a/7Qdq/KUfRnYC4eh4lJdrZNdfaZQh2YuKcU6sDishLKRnvwBiA7XS8D/Q9mM44V2Sx7VwFldCXJy6dF7xqCWkiYeuBDLjmOKkIl0FI9RcWfXAZd6TpP+g1feccG5HH9floDAnQfD/Jmoh/jqf/AHX4DJPSUsq8NtGYwd3cnG/Xlo/qif0Ofbjydo/CWuO5l0eO9E/+TwOjoeSjVissEgKdox3ePc8gxn1uJ9DTPvSH4qUTOl2avCLn/wCZS3vb7Cqr+AP/AKNUVlwaOTT3sN6UUHWfXuWsi5J6oSci9TpiYU7ILQl3ebSCBlaVDHHjwg/U1h0c2kGPssvP+sy37GAoro59IAnP1W3p/WZb9jAQe2h7BpWl+1hU7Eoc1NzMhRqrKtsOzikqdUFIZcO8UgDms8gIDdKrl64DUXsKfwiFt/juofoZiA26J8keiA1s9Nl9ue0Pk+59JXATk2TfewaefJWn/R0QGs+cpEnXulHnKTPthyWmtUXkuoIyFpE8o4PmOIDbknyYDGe2dR5SubKWoUjOpCm0W3OTKcjOFstF5B9Sm0wEIuhSqD7Wt92UsKPUTdvJecGfhtzCAk+xxXtgJV9Is8hGilPaUcKdrjO6PQ24T80TmgR/zMz7kjpv9WZ9zAGxS2p3aSt/c47iZhZ9AZXE7rMxGFX8P1bud/QlP4cooyBIBAIDi6rcbKicAcyeyA1h9JZtGv6qXqNLrEmHJi2qVNht9yVyv3anAd0BIT5baFcEAeUrKuPiwEpejo2cGNGrCFw3LJhV61+XSZ0qGfc5g4UmVSe/kVkc1ADkkZCTAwOQPsgBIxyPsgIQ9NHYE5VLDtfUWRYU41QJh2RqJSM7jT5QW1nzBxG76XBAXv0WWsNDvLQCl2HMVBpu5LTbMm7Jrcw4/KhRLTyE58ZISQhWORTxwCICReo92UCxrNn7pueptU6l01lTsw+6rHADO6kHylHkEjiSQBARl2R9sG4tcdb0WZJabsU+mIl35ucqJqa3FyzCAQglG4AVKWW04z2nugPh00XvYqJ8qWPo8xAdroaveo1D5UzX6GXgJZq8k+iA1OdFR79+j/gdR/QLgNhW3Z7z/UP5Pv8A6oCIfQiLSL8v9oqAcXTZJSU9pAdcBPzj2wE0Nr73qepPyQqf0VyAhH0JX2270/ELP0gQGyH4MBAvpvpR9VG07nwglhuZqDKlY4BSksKA9YSr2GAzD0WN30WvbIdAolOnGl1C3nJiUqEqFgusqL63EqKee6pLgIPLmOYMB63SH6sW5p7s43JS56pMe7lx012nUunJUC86p1O4pzc5hCElSio8OAHMiAil0KAA15u0D/ZofSWoDLnTX/aDtX5Sj6M7AXP0P3vRR8oJ38zUB9ul5959M/jyS/vLgLQ6E37Qt2fKb/lmYDK/Sde8Zvv+bkfp8tAYD6D7/svUT+ep/wDdfgM19IzS1zGm1EqyBkSNULS/MHWzx9qB7YmdEq2v1U9YdS/CnKijU79ifzUb/wCmY+7CexNWEUraFpLbqsIqTL8lnPapG8n+0gD1xLarb7+LM9OK+/iJizkaBdmOdExV8p2n6SnDepzZVVPfT3/0aoqD5wat+iM9+PIfiWd/uJgNrw5CA4u+QYDUPt7fwgV1fjqS/QS0Bt5Vy9YgNPmzBWabYO33SajdMy3IStOueblZt507qGFLLzO8o9iQtQyTyGT2QG31U1Lpp/hhfbDAb6zrt8bm7jO9vcsY455QGqLpUNUbf1K2iGWbWnWahTbbpopxnWFbzUw91i3HC2oeUkFQTkcCUnGRgkNkOyb72DTz5K0/6OiA1U65XJNWdt4XbdkknfmKJf8ANzzaN7d3y3OqXu58+MeuA26aWXzbmoliyF22nUmp+m1BoONrbUCpskAltwDyVpJwUniCIDBvSdau0SxNnSs2p7oMquG7ZVUhJyKVjrUsrOHnlJ5pQEbwBPNSgB24DC/QpWVONG8tQn2VtyryWaRJKKeDpB617B7cfWh6Se6Ayv0lFZb8Eta3kLy4px+edT3ABLaT7VL9kWTs5bnvV3fKEtpdHGqv4LJ6Pakmd1xmKipPiUukvL3u5TikIA9hV7I3NeuRTixT1lk1Kra3t1lN6KehSAQCA8PUyQnKrpzX6XTkBc5PUqZl5ZJXuguLaUlI3uziRx7IDVpLbDu0ixMNvsWzT23W1JUhxFelkqQoYwQQvIMB6v8AgibW/wAR7/i1v9pAP8ETa3+I9/xa3+0gPrI7I+1o3OsuONvFCHEqV/nY3yBH8ZAbN69QqZcVqzNv16ny8/T56VMtOSkwnebeQpOFJI7v/wBEBAbWno/bwo90uVzRi65Z2WS6XGJKozS5Wck88komEjC8dhO4cc884C1pXYu2n74qMvK33c8uzJMrz19XuJyf6od7baSvJxyGU+kQE3NkjQC0tBrJcpVCWqfqc+UuVSrvoCXZtSc4SAOCG05O6gE8ySSTAWl0lmlF66v6H0u27Fp7E7UJavNTjqHptuXCWksvJJ3lkAnK08PPAfbo3dLry0h0FnLWvmnsSVSdrr84htmbQ+ktKaZSDvIJGcoVwgJBLOEH0QEANgnZd1i0w2nqbel4UGRlKTLy04h11qqsPKSXGlJThCSSeJEBOXUm2Kdemn9ZtKrBXgVbkHpJ8o8pKXEFO8nzjOR5wIDW/L7Fu0zYl9Pu2BXJVDagphqs0yvGQcWwTyWnKVjOBlI3hkcCeBgJmU7TW9ZPYOqGl9TmGKndr9oz1NW6JwrRMTTyHQnLzmCclaQVKxAYc6MjZ81P0a1CuWq35R5SSlalSm5aXWxUWpgqcDoUQQgkjh2mAmiDkZgMd7UGj9va3aVTNmV9xcsouCZkJ5pIUuSmUghLgSeChhSkqTwylRGQcEBr9rOwptEWtcalWnPUmeaCt1qep9ZMmvczzUle6pPoBV64C/tHuj+uuopn63q1c0m7Pqk3kyFOl5px/fmC2Q0uZmCMhCVkEpQCTjnzBDKfR+bK976DakVu4rnr1BqEvU6QJJtFNW8paF9aheTvtpGMIMBcHSZ6RXzrJpRQaFYdOl52dka14W+h6cblwlvqXEZBWQCcqHCA97o6tMrv0n2ehal7SLEnUxV5mZ6tmaQ+nq1hvdO8gkfBPCA5dIbptdmq+zq9aVlSLM5VF1SWmA09MoYTuIKt47yyB2jhAW/0ZWkF86NaUXBQ78p0vJTk/WvC2EMTjcwFN9Q2jJKCQOKTwMBf23FY9xakbLV1WVaco1NViqIlRKsuvpZSrcm2XFZWrgMIQo8e7EBiXov9ENRNF5K8Wr/pUtImsOSipPqJ5qY3+rDoVncJ3fLTz5wGcdp22HLs0OuCmMt78wiW8KlkjmXGiHAB6d0jHnjbwbvosimrwWTsjqMafrmPfqnanfuz5VcP7oA2pV5mgXRTq7Jk9dTZtqZbweZQoKx6xwi43aIuW5o6xs+ltQw6cvGu41fKuJp+fBshcnWLn06XOUhQdaq1MUuVJUAFBxo7vHs8oRRa6JoqmmecPkvIx68e9XZue1TMxPnCEPR77MOsGlO0bKXfedCkpSlM0yZYW6zVGH1Ba0AJG6hRPMR5YU+08UiAo6cIPngNeG1fsp6031tbV6/Lct6RmKLP1KWfl3nKsw0pSENMpUShSt4cUK4YgNiChkYgIU7bmw/N6h33PagaZ1WnyNUqai9UqVUCptl97tdacSDuqVzUlQwTk5GYDB9B2JdpmolugVKfp9Lo+9uq8JuFTsulPaQ03vE8OzA9UBkDUbo6KuqiUGUsW7KSqcl5Zz3cnasp5rwt9SgU9U2hCwhtKeABOTzOewJvaKWzOWdo9a9pVF9h+bodGlZB91gnq1raaShRTkA4JHDIzAQ1vnYQvC7dpms3vWbgtxy2K3c79RmpJExMImzKOvqWUAhvdDm6rHPAPbAWtfuw7rhYtwTb+jV8qmqXMKJQhurOUycAzwS5ghteBgbwUM9wgOlprsCat3Xdaalqrc8nS5NxYVOOInjUKg+O0AkFAJ+MpRx3GA2DaXWRbundg06z7Up6ZKlUtnqmGgd5SuJKlqUfKWokkqPMmAhDtkXWm6teKqZd0OSlICabLkHgerz1hHpcUr2CLvo9j0GHTvzniseDa9Hjxvznizb0cttKk7GrV0vN4XVZxMswSMEtsjj6t9ah+SYh+0N7e9Ta6QjtSub1xTCSkQCNIBAIARmAoEgdkAwO6AYHdAN0d0AAxAMCAYEBUcIARmA47icQFSAecBQIHn9sByxAU3R7IAUgjEBTcTjlAchAICmBnMAAAgKwFN0d0BUQFN0QDdEBXHDEBQpEBR0AtEEAjGMHkYG+3Frr2jbMXYertVorbe7JOOeFU844KYcJKQPvTlP5MXTAv+msRV48p831B2W1iNW0i1fmfWiO7V/3RG31jafikPsAX+irWe9Yc+/+7aMS7JBR4uSylcQPvFEj0KT3RC6xi+juRdpjhP6uVfiToc2M2NRtR6lzhV7qo5f6oSOCUgxCuaKwAgEYMBQJAgKwAjMBTAgAAHKArAICmBAAAICwdpG/2tO9LahWkuJE+8PBqa2fhvrB3TjuSMqPmTG5gYs5ORFuOXOfJs4lib96KfDxa9qbJz9YrcvIyiVzU9PzCWmkk5U66tWBnzknJi+110W6Jqq5R+yz1zFMb9GybSm1pWzNOqPbEqQpNNlUtLWP+8c5rX61lR9cc8yL0371V2fGVTu19+uauq4owsZAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAUXkpOOcBhDbY0zcvTT8V2ly+/WaClTqEIGVTEvzcb85GN4egjtiU0rKixd7s+zK+dgO0MaZqH8Pen+Vd4Tvyirwn48p80ONPbnqlm3jIXLR3dybkHQtKSfFcTyUhX3Kkkg/9RFmvWab9ubdUc3btV02xqOHXi5EerV9J8J+DYfpLelHvyy5W5KM7lmYTh1oqBXLujym19xB9owe2KXkWK7FyaK3zPq+lZOl5leLkRxjlPWPCY90roByMxhRpAIBAIBAIBAIBAdarTkrIU96dnZhuXl5dtTjzrqt1LaAMlRPYAOMIiZmIjmREzO0c0AtqLVJzUzUAvyi3E0OmbzNMaVkb4z4zyh8ZeB6AAO+LzpmD/C2fW9qef2WzCw/4e1tPtSyRsA6ZuVGuuai1WX/AHJIFTNJCxwdexhbo8yASkH4xPdEdrub3af4ejx5o/VMjaPRU/FLxsEIAMVdBuUAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEBxcQFjBJGO6BshbtnaNuWnXX70t2WJoU+9vTbLaeEg8o8Tgcm1Hl3E47RFn0vPi7Hoq/aj6u49h+1cZ9iNPyqv5tMcN/zRH7x49Y49WP9ANUqzpfdon5QKmaZNFKajIFeEvpHJSe5xPYfUeHLdzMOnKo7s+14Snu0nZ2xreN6Ovhcj2aunn7k89ObyoN72yzXLcnm5qVd4KHJbK+1DieaVDtB9WRFQvWblmvuXI2l8/ajp2Tp2ROPk07VR8pjrE9FwxiaJAIBAIBAIBAdWqT8tTpB6dnZhmXlpdBW688sIQ2kcyongAI/aaZqnamOL9ppmqdqY4oW7WuvLl9uOWparzjVuMrxMTAylVTUOXDmGgeIB4qPE8MCLbpelegiLt2PW/RadO0z0MRdu+1+iw9n7TGq6n3qimywWzTZYpcqc9u+Kw3nyQe1auSR6zwEb+fnU4trvTxqnlH+/BnzsunHo708/BsHtajU6gUKUo1JlUSslIspZYZRySkfnPaT2kmKLcuVXK5rq5yqFdU11TVVzl6MeHkgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEAgEB1qtIylSpsxIT8s1My0y2pp5l1IUhxJGCkg8wY/aappmJjm92rtdquLludqo4xMc4Qr2n9n+pWNMPXFarD09baiVONpyt2neZXapvuVzHJXfFo0/Uqb0RbucKv1du7L9tLeo0042ZMU3uUTyiv7VdevgxfphfdzWBcKaxbVSVLrVgPsK8ZmZSPguI5EefmOwiJHIxbWRT3bkLHq+kYeqWZtZNG+3KfzR74TA0S2krMvBDUhXnEW7V1YSWplz9zvK/i3TwHoVg+mKzlaVes8afWp+rjmtdjM/Amblj+Zb6xzjzj943ZqbeaWhK0LCkqGUkcQR3xF7eCnTwnaebklQPIwI4qwCAoTiApvp7/ZAY91h1osTT1lbVVqqZqpJSSimSRDj6j2bwHBsedRHrjdxdPyMmY7tPDrKQxNLysqY7lO0dZQ6141ruvUyZMtMrFOoaFbzVMl3DuqIPBTqubih58JHYIteDplrF4xxq6/ZbMLS7OJG8cauv2dPQnSe49UK/4PTUKlaYwsCdqbiCW2R2pT8dzuSPXgRkzs+1i0+txq8IeM/Ot41PrcauieOmNl0KxLTl7ft6UDEqxxWsnLj7nwnHFfCUf/AKHCKTkZFzIuekuTvKmX79d+vv1zuuSMLCQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCA4PNpdQUrAKSCCCOBBgcp3hHjXvZiotfffrVjOs0WorJW5IrBEo+eZKccWifN4vmETOFq9dr1LvGnr4ugaF28yMXu2M/e5RHKfzRH7/qirf8AZd0WXUzTrooszT3SSEKcTlt7jzQ4MpUPQfZFjsZFu9TvbqdOwtTw9QtxdxbkVR57THnEvU081Uv+yQlu3rlm2ZZHDwN8h+X9HVryB+TiMV/Cx73t08UdqWh6dnf17Ub9Y4T84ZhtHbAuCVbQi4rSkJ/Awp2SmVS6j5ylQUPZiI25oNE/069vNTsrsLjzxsXpjzjf7L0p+2BZbmBO2xXpY9pR1LgHsWDGrVoV+OVUIe52JzKZ9W7TMfGP2fac2vbEQjMtb9wPnu6tpH51x+RoeR41QwR2Ozd+NdP1+y1rm2xnlNqTQLHQhWPFcqE9ketDaf8A3Rs29B4/zK/k2bXZCIn+be+EQxPf+vmqF2NLlpm4VU6UcyDLUtHg6SO4rGVn+lEpY0vEs8Yp3n3pSxoWDjcYo3nrPH6cmP6NTKnXKsmQpcjNVCdmF+KzLtqccWT24GT6zG/XXTbomZnuw27tyi1RNVU92lIvQ/ZWnpx1mq6kPmTl8gppMq4C855nXBwQPuU5PnEQGbrlHs4/zVTO16j2cfj7/slZbtFpdBo0vSaNIsSMlKo3GWGEBKED0fnPM9sVquuquqaqp3mVXrrqrq71U7y744CPLyQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCAQCApgdwgOnXaVTaxTV0+qU+WnZV3g4xMMpcQr8kgiPVFdVE70ztLJbvXbVXftVTE9YnZhq+9lrTmuKW9R0TtvTCv9Sd32c9/Vrzj1ERJ2dYybftet5rXhdttUsbRd2uR744/OP7sWXJsgXawpSqJdFInkAndTMtOS6/m3gfmiSt67ZmfXpmJ+aw2e3eLXG121VT5bTH7LTm9mHV9lSg3Rqc+lPa1U2+PqOI2qdZxJ4TM/JtR2t0quPamPOn7PnL7M+sLvO3ZNoZxl2ptD8xMep1jDj80/JhudqNLieFyZ+Erht/ZI1CnFJVU6vQ6a2fKAcW+segJSAfbGCvXrFPs0zP0R1/tZhx7FNVXyj7slWXsjWhIOIeuOt1KsLTgllrEqyfMcZWR+UIj7uvX6uFumKfqg8ntRk3P6VMU/WfszbY9nWxaEgZK26FI01kjCvB2QlS/vleUr1kxEXb929O9yqZV+/k3r873apl7mB3CMTArAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAIBAICioCiIDlAIBAIBAIBAIBAIBAID/2Q==" alt="ZentrumHub" class="h-16 object-contain"/>
-      </div>
-    </div>
-
-    <div class="text-center max-w-4xl mx-auto">
-      <p class="pill pill-pink mx-auto mb-6" style="width:fit-content">
-        <span class="pulse-dot"></span>
-        Strategic Market Assessment · 2026
-      </p>
-      <h1 class="font-display font-800 text-5xl md:text-7xl leading-tight mb-6">
-        The Travel Tech<br/>
-        <span class="shimmer-text">Supremacy Report</span>
-      </h1>
-      <p class="text-slate-400 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-10">
-        A forensic breakdown of how ZentrumHub outperforms TravelgateX, QTech, dcs plus, Gimmonix, and Juniper across every critical dimension — speed, cost, accuracy, and AI.
-      </p>
-      <div class="hero-line w-48 mx-auto"></div>
-    </div>
-
-    <!-- TOP STATS ROW -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16">
-      <div class="stat-card fade-in text-center">
-        <div class="text-4xl font-display font-800 grad-text mb-1">0.1s</div>
-        <div class="text-xs text-slate-500 uppercase tracking-widest font-display">Search Overhead</div>
-        <div class="text-xs text-slate-600 mt-2">Industry-leading <a href="https://crozdesk.com/software/zentrumhub-solutions-pvt-ltd" target="_blank" class="source-link">REST/JSON API</a></div>
-      </div>
-      <div class="stat-card fade-in text-center" style="transition-delay:0.1s">
-        <div class="text-4xl font-display font-800 grad-text mb-1">99.99%</div>
-        <div class="text-xs text-slate-500 uppercase tracking-widest font-display">Uptime SLA</div>
-        <div class="text-xs text-slate-600 mt-2">vs <a href="https://www.dcsplus.net/" target="_blank" class="source-link">dcs plus</a> at 99.95%</div>
-      </div>
-      <div class="stat-card fade-in text-center" style="transition-delay:0.2s">
-        <div class="text-4xl font-display font-800 grad-text mb-1">4.9/5</div>
-        <div class="text-xs text-slate-500 uppercase tracking-widest font-display">User Rating</div>
-        <div class="text-xs text-slate-600 mt-2">Via <a href="https://www.softwareadvice.com/hotel-management/zentrum-booking-engine-profile/" target="_blank" class="source-link">Software Advice</a></div>
-      </div>
-      <div class="stat-card fade-in text-center" style="transition-delay:0.3s">
-        <div class="text-4xl font-display font-800 grad-text mb-1">$23B</div>
-        <div class="text-xs text-slate-500 uppercase tracking-widest font-display">Market by 2035</div>
-        <div class="text-xs text-slate-600 mt-2">From <a href="https://www.businessresearchinsights.com/market-reports/travel-technology-market-110253" target="_blank" class="source-link">$12.09B in 2026</a></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- MARKET GROWTH -->
-<section id="market" class="py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="grid md:grid-cols-2 gap-16 items-center">
-      <div class="fade-in">
-        <p class="pill pill-purple mb-4" style="background:rgba(123,45,139,0.15);color:#c084fc;border-color:rgba(123,45,139,0.4);">Market Intelligence</p>
-        <h2 class="font-display font-700 text-4xl md:text-5xl leading-tight mb-6">
-          A <span class="grad-text">$23 Billion</span><br/>opportunity is forming
+    <section>
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-2">
+            <span class="bg-red-100 text-red-600 p-2 rounded-lg">⚠️</span> Market Pain Point Analysis
         </h2>
-        <p class="text-slate-400 leading-relaxed mb-6">
-          The <a href="https://www.businessresearchinsights.com/market-reports/travel-technology-market-110253" target="_blank" class="source-link">global travel technology market</a> is projected to nearly double from <strong class="text-white">$12.09B in 2026</strong> to <strong class="text-white">$23.28B by 2035</strong>, driven by a 7.55% CAGR. About <a href="https://www.businessresearchinsights.com/market-reports/travel-technology-market-110253" target="_blank" class="source-link">50% of growth is fueled by SaaS-AI adoption</a>. The window to establish platform dominance is now.
-        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- ZentrumHub -->
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-blue-500">
+                <h3 class="text-xl font-bold mb-3 text-blue-700 uppercase tracking-wide">ZentrumHub</h3>
+                <ul class="space-y-2 text-slate-600 text-sm">
+                    <li>• <span class="font-semibold">Cost Friction:</span> Higher implementation and monthly costs compared to mid-market aggregators.</li>
+                    <li>• <span class="font-semibold">Market Perception:</span> Often seen as a "premium-only" player, potentially scaring off SMEs.</li>
+                    <li>• <span class="font-semibold">Resource Intensity:</span> Requires technical capability on the client side to leverage advanced APIs.</li>
+                </ul>
+            </div>
 
-        <div class="grid grid-cols-3 gap-4 mb-6">
-          <div style="background:rgba(30,41,59,0.6);border-radius:12px;padding:16px;border:1px solid rgba(51,65,85,0.5);">
-            <div class="text-2xl font-display font-700 text-emerald-400 mb-1">9.6%</div>
-            <div class="text-xs text-slate-500">APAC CAGR<br/><a href="https://www.technavio.com/report/travel-technologies-market-industry-analysis" target="_blank" class="source-link">Fastest region</a></div>
-          </div>
-          <div style="background:rgba(30,41,59,0.6);border-radius:12px;padding:16px;border:1px solid rgba(51,65,85,0.5);">
-            <div class="text-2xl font-display font-700 text-sky-400 mb-1">32.8%</div>
-            <div class="text-xs text-slate-500">N. America<br/><a href="https://www.imarcgroup.com/travel-technology-market" target="_blank" class="source-link">Market share</a></div>
-          </div>
-          <div style="background:rgba(30,41,59,0.6);border-radius:12px;padding:16px;border:1px solid rgba(51,65,85,0.5);">
-            <div class="text-2xl font-display font-700 text-violet-400 mb-1">81%</div>
-            <div class="text-xs text-slate-500">Europe<br/><a href="https://www.imarcgroup.com/travel-technology-market" target="_blank" class="source-link">Digital penetration</a></div>
-          </div>
+            <!-- Juniper -->
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-orange-500">
+                <h3 class="text-xl font-bold mb-3 text-orange-700 uppercase tracking-wide">Juniper</h3>
+                <ul class="space-y-2 text-slate-600 text-sm">
+                    <li>• <span class="font-semibold">Legacy Rigidity:</span> Built on older architecture; updates are slow and often cumbersome.</li>
+                    <li>• <span class="font-semibold">Integration Bottlenecks:</span> High time-to-market for new supplier connections.</li>
+                    <li>• <span class="font-semibold">High Ownership Cost:</span> Significant maintenance fees for stagnant technology.</li>
+                </ul>
+            </div>
+
+            <!-- TravelgateX -->
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-teal-500">
+                <h3 class="text-xl font-bold mb-3 text-teal-700 uppercase tracking-wide">TravelgateX</h3>
+                <ul class="space-y-2 text-slate-600 text-sm">
+                    <li>• <span class="font-semibold">Scale Complexity:</span> Pricing models can become complex at very high transaction volumes.</li>
+                    <li>• <span class="font-semibold">Market Saturation:</span> Broad focus makes hyper-personalized technical support difficult.</li>
+                </ul>
+            </div>
+
+            <!-- QTech Software -->
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-slate-400">
+                <h3 class="text-xl font-bold mb-3 text-slate-700 uppercase tracking-wide">QTech Software</h3>
+                <ul class="space-y-2 text-slate-600 text-sm">
+                    <li>• <span class="font-semibold">Feature Lag:</span> May lack the cutting-edge AI/ML search optimizations of ZentrumHub.</li>
+                    <li>• <span class="font-semibold">Regional Focus:</span> Support and presence can be heavy in specific regions (MENA/Asia), leaving gaps elsewhere.</li>
+                </ul>
+            </div>
+
+            <!-- dcs plus -->
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-slate-400">
+                <h3 class="text-xl font-bold mb-3 text-slate-700 uppercase tracking-wide">dcs plus</h3>
+                <ul class="space-y-2 text-slate-600 text-sm">
+                    <li>• <span class="font-semibold">ERP Rigidity:</span> Heavily tied to their back-office ecosystem, making standalone use difficult.</li>
+                    <li>• <span class="font-semibold">UX/UI Modernity:</span> Interfaces can feel "industrial" and less intuitive for modern OTA teams.</li>
+                </ul>
+            </div>
+
+            <!-- Gimmonix -->
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-t-4 border-slate-400">
+                <h3 class="text-xl font-bold mb-3 text-slate-700 uppercase tracking-wide">Gimmonix</h3>
+                <ul class="space-y-2 text-slate-600 text-sm">
+                    <li>• <span class="font-semibold">Narrow Focus:</span> Excellent at mapping, but may lack the end-to-end booking depth of full engines.</li>
+                    <li>• <span class="font-semibold">Support Delays:</span> Common complaints regarding technical response times for complex issues.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <!-- Multi-Org Radar -->
+        <div class="glass-card p-8 rounded-3xl shadow-xl">
+            <h2 class="text-2xl font-bold mb-2">Cross-Market Performance Radar</h2>
+            <p class="text-slate-500 text-sm mb-6">Comparing 6 core metrics across all major competitors. Hover or click legend to filter.</p>
+            <div class="chart-wrapper">
+                <canvas id="multiRadarChart"></canvas>
+            </div>
         </div>
 
-        <p class="text-slate-500 text-sm leading-relaxed">
-          <strong class="text-slate-300">ZentrumHub's home advantage:</strong> With India and Southeast Asia as the fastest-growing travel tech markets, ZentrumHub is <a href="https://www.technavio.com/report/travel-technologies-market-industry-analysis" target="_blank" class="source-link">uniquely positioned to dominate APAC</a> through regional integrations and local payment gateways that global giants like Amadeus cannot match at speed.
-        </p>
-      </div>
-
-      <!-- BAR CHART -->
-      <div class="fade-in" style="transition-delay:0.2s">
-        <div class="glow-border" style="border-radius:20px;padding:28px;background:rgba(15,23,42,0.8);">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="font-display font-600 text-slate-200">Market Growth by Region</h3>
-            <span class="pill pill-green">CAGR %</span>
-          </div>
-          <div class="chart-wrap" style="height:260px;">
-            <canvas id="marketChart"></canvas>
-          </div>
-          <p class="text-xs text-slate-600 mt-4 text-center">Source: <a href="https://www.technavio.com/report/travel-technologies-market-industry-analysis" target="_blank" class="source-link">Technavio Travel Technologies Market Analysis</a></p>
+        <!-- Market Positioning -->
+        <div class="glass-card p-8 rounded-3xl shadow-xl">
+            <h2 class="text-2xl font-bold mb-2">The Agility vs. Cost Quadrant</h2>
+            <p class="text-slate-500 text-sm mb-6">Visualizing who provides the best speed-to-market relative to total implementation cost.</p>
+            <div class="chart-wrapper">
+                <canvas id="positioningChart"></canvas>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- COMPARISON TABLE -->
-<section id="compare" class="py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-14 fade-in">
-      <p class="pill pill-pink mx-auto mb-4" style="width:fit-content">Head-to-Head</p>
-      <h2 class="font-display font-700 text-4xl md:text-5xl mb-4">Six tribes. One winner.</h2>
-      <p class="text-slate-500 max-w-xl mx-auto">Every major B2B travel distribution provider benchmarked across the metrics that move revenue.</p>
     </div>
 
-    <div class="fade-in glow-border" style="border-radius:20px;overflow:hidden;background:rgba(15,23,42,0.85);">
-      <div style="overflow-x:auto;">
-        <table class="compare-table w-full" style="min-width:900px;">
-          <thead style="background:rgba(30,41,59,0.6);">
-            <tr>
-              <th class="text-left" style="padding-left:24px;">Provider</th>
-              <th class="text-center">Suppliers</th>
-              <th class="text-center">Uptime</th>
-              <th class="text-center">Search Speed</th>
-              <th class="text-center">User Rating</th>
-              <th class="text-center">API Type</th>
-              <th class="text-center">Pricing Model</th>
-              <th class="text-center">AI Features</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="highlight-row">
-              <td style="padding-left:24px;">
-                <div class="flex items-center gap-3">
-                  <div style="width:8px;height:8px;border-radius:50%;background:var(--pink);box-shadow:0 0 8px var(--pink);flex-shrink:0;"></div>
-                  <div>
-                    <div class="font-display font-600 text-white">
-                      <a href="https://crozdesk.com/software/zentrumhub-solutions-pvt-ltd" target="_blank" class="source-link" style="color:white;text-decoration:none;">ZentrumHub</a>
+    <section class="bg-slate-900 text-white p-10 rounded-3xl shadow-2xl overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600 opacity-20 blur-3xl rounded-full -mr-20 -mt-20"></div>
+        <div class="relative z-10">
+            <h2 class="text-3xl font-bold mb-8">Strategic Capitalization for ZentrumHub</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 font-bold">01</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-300 mb-2">The "Legacy Displacement" Campaign</h3>
+                            <p class="text-slate-400 leading-relaxed">Directly target Juniper's client base by highlighting the <strong>60% faster deployment speed</strong>. Frame the higher cost as an "Agility Tax" that pays for itself through immediate revenue capture.</p>
+                        </div>
                     </div>
-                    <div class="text-xs text-pink-400">★ Top Pick</div>
-                  </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 font-bold">02</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-300 mb-2">Support-as-a-Service (SaaS+)</h3>
+                            <p class="text-slate-400 leading-relaxed">Leverage the technical team depth to offer "Consultative Integrations" that competitors like TravelgateX cannot provide due to their volume-first model.</p>
+                        </div>
+                    </div>
                 </div>
-              </td>
-              <td class="text-center"><span class="pill pill-pink">75+ suppliers</span></td>
-              <td class="text-center font-display font-600 text-emerald-400">99.99%</td>
-              <td class="text-center font-display font-700 grad-text-warm">0.1s</td>
-              <td class="text-center font-display font-600 text-white">4.9 / 5</td>
-              <td class="text-center"><span class="pill pill-green">REST/JSON</span></td>
-              <td class="text-center text-slate-300">Trial + Premium</td>
-              <td class="text-center text-slate-300">AI-driven B2B suite</td>
-            </tr>
-            <tr>
-              <td style="padding-left:24px;">
-                <div class="font-body text-slate-300">
-                  <a href="https://phptravels.com/blog/affordable-travel-api-integration-platforms" target="_blank" class="source-link" style="color:#cbd5e1;">TravelgateX</a>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 font-bold">03</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-300 mb-2">Modular White Labeling</h3>
+                            <p class="text-slate-400 leading-relaxed">Lower entry barriers by offering "Core-only" packages with the option to unlock advanced white-label features as the client grows, mitigating initial price friction.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="bg-blue-500/20 p-3 rounded-xl text-blue-400 font-bold">04</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-blue-300 mb-2">API Modernity Showcase</h3>
+                            <p class="text-slate-400 leading-relaxed">Regularly publish "Speed Tests" comparing ZentrumHub response times and data accuracy against dcs plus and older GDS wrappers.</p>
+                        </div>
+                    </div>
                 </div>
-              </td>
-              <td class="text-center text-slate-400">Massive</td>
-              <td class="text-center text-slate-400">SLA-based</td>
-              <td class="text-center text-slate-500">N/A</td>
-              <td class="text-center text-slate-500">N/A</td>
-              <td class="text-center text-slate-400">Aggregation</td>
-              <td class="text-center text-slate-400">Pay-as-you-go</td>
-              <td class="text-center text-slate-500">—</td>
-            </tr>
-            <tr>
-              <td style="padding-left:24px;">
-                <div class="font-body text-slate-300">
-                  <a href="https://www.qtechsoftware.com/" target="_blank" class="source-link" style="color:#cbd5e1;">QTech (OTRAMS)</a>
-                </div>
-              </td>
-              <td class="text-center text-slate-400">190+</td>
-              <td class="text-center text-slate-400">Enterprise</td>
-              <td class="text-center text-slate-500">N/A</td>
-              <td class="text-center text-slate-300">5.0 / 5</td>
-              <td class="text-center text-slate-400">REST</td>
-              <td class="text-center"><span class="pill pill-red">$750/mo + 1.5%</span></td>
-              <td class="text-center text-slate-400">rePUSHTI</td>
-            </tr>
-            <tr>
-              <td style="padding-left:24px;">
-                <div class="font-body text-slate-300">
-                  <a href="https://www.dcsplus.net/" target="_blank" class="source-link" style="color:#cbd5e1;">dcs plus</a>
-                </div>
-              </td>
-              <td class="text-center text-slate-400">Hundreds</td>
-              <td class="text-center text-slate-400">99.95%</td>
-              <td class="text-center text-slate-500">N/A</td>
-              <td class="text-center text-slate-300">4.7 / 5</td>
-              <td class="text-center text-slate-400">Enterprise</td>
-              <td class="text-center text-slate-400">Custom quote</td>
-              <td class="text-center text-slate-400">TINA AI</td>
-            </tr>
-            <tr>
-              <td style="padding-left:24px;">
-                <div class="font-body text-slate-300">
-                  <a href="https://www.altexsoft.com/blog/hotel-mapping-tools-how-giata-gimmonix-databindr-and-other-solutions-work/" target="_blank" class="source-link" style="color:#cbd5e1;">Gimmonix</a>
-                </div>
-              </td>
-              <td class="text-center text-slate-400">1.9M props</td>
-              <td class="text-center text-slate-400">Cloud auto</td>
-              <td class="text-center text-slate-500">N/A</td>
-              <td class="text-center text-slate-500">N/A</td>
-              <td class="text-center text-slate-400">GUI/API/FTP</td>
-              <td class="text-center text-slate-400">Per unit</td>
-              <td class="text-center text-slate-400">Hybrid AI</td>
-            </tr>
-            <tr>
-              <td style="padding-left:24px;">
-                <div class="font-body text-slate-300">
-                  <a href="https://ejuniper.com/en/buyers/" target="_blank" class="source-link" style="color:#cbd5e1;">Juniper</a>
-                </div>
-              </td>
-              <td class="text-center text-slate-400">1,000+</td>
-              <td class="text-center text-slate-400">AI-powered</td>
-              <td class="text-center text-slate-500">N/A</td>
-              <td class="text-center text-slate-300">4.3 / 5</td>
-              <td class="text-center text-slate-400">XML/JSON</td>
-              <td class="text-center text-slate-400">$0–$991/mo</td>
-              <td class="text-center text-slate-400">JuliA AI</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <p class="text-xs text-slate-600 text-center mt-4">Data compiled from <a href="https://www.softwareadvice.com/hotel-management/zentrum-booking-engine-profile/" target="_blank" class="source-link">Software Advice</a>, <a href="https://crozdesk.com/software/zentrumhub-solutions-pvt-ltd" target="_blank" class="source-link">Crozdesk</a>, and vendor documentation. Highlighted row = ZentrumHub.</p>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- PRICING PAIN -->
-<section id="pricing" class="py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="grid md:grid-cols-2 gap-16 items-start">
-      <div class="fade-in">
-        <p class="pill pill-amber mb-4">Cost Analysis</p>
-        <h2 class="font-display font-700 text-4xl md:text-5xl leading-tight mb-6">
-          The <span class="grad-text">1.5% trap</span><br/>compounds fast
-        </h2>
-        <p class="text-slate-400 leading-relaxed mb-6">
-          <a href="https://www.qtechsoftware.com/otrams-go-pricing/" target="_blank" class="source-link">QTech's OTRAMS pricing model</a> charges $750/month plus a 1.5% fee on non-air transactions. What starts as a "low entry point" becomes an <strong class="text-white">aggressive burden at scale</strong>. An agency processing $1M/month in hotel bookings faces $15,000 in transaction fees alone — on top of the subscription.
-        </p>
-
-        <div class="space-y-4 mb-8">
-          <div style="background:rgba(30,41,59,0.6);border-radius:12px;padding:18px 20px;border:1px solid rgba(51,65,85,0.5);">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm text-slate-400">$100K/month booking volume</span>
-              <span class="font-display font-600 text-amber-400">$2,250/mo</span>
             </div>
-            <div style="height:6px;border-radius:3px;background:rgba(51,65,85,0.5);">
-              <div style="width:15%;height:100%;border-radius:3px;background:linear-gradient(90deg,#f59e0b,#ef4444);"></div>
-            </div>
-          </div>
-          <div style="background:rgba(30,41,59,0.6);border-radius:12px;padding:18px 20px;border:1px solid rgba(239,68,68,0.3);">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm text-slate-400">$500K/month booking volume</span>
-              <span class="font-display font-600 text-orange-400">$8,250/mo</span>
-            </div>
-            <div style="height:6px;border-radius:3px;background:rgba(51,65,85,0.5);">
-              <div style="width:55%;height:100%;border-radius:3px;background:linear-gradient(90deg,#f59e0b,#ef4444);"></div>
-            </div>
-          </div>
-          <div style="background:rgba(30,41,59,0.6);border-radius:12px;padding:18px 20px;border:1px solid rgba(239,68,68,0.5);">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm text-slate-400">$1M/month booking volume</span>
-              <span class="font-display font-600 text-red-400">$15,750/mo</span>
-            </div>
-            <div style="height:6px;border-radius:3px;background:rgba(51,65,85,0.5);">
-              <div style="width:100%;height:100%;border-radius:3px;background:linear-gradient(90deg,#f59e0b,#ef4444);"></div>
-            </div>
-          </div>
         </div>
-
-        <div style="background:linear-gradient(135deg,rgba(233,30,140,0.1),rgba(123,45,139,0.1));border:1px solid rgba(233,30,140,0.25);border-radius:14px;padding:20px 24px;">
-          <div class="font-display font-600 text-white mb-2">ZentrumHub's transparent model</div>
-          <p class="text-slate-400 text-sm">ZentrumHub's <a href="https://crozdesk.com/software/zentrumhub-solutions-pvt-ltd" target="_blank" class="source-link">Trial/Premium flat pricing</a> means costs stay predictable as you scale — no percentage fee eating into margins as booking volume grows.</p>
-        </div>
-      </div>
-
-      <!-- LINE CHART -->
-      <div class="fade-in" style="transition-delay:0.15s">
-        <div class="glow-border" style="border-radius:20px;padding:28px;background:rgba(15,23,42,0.8);">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="font-display font-600 text-slate-200">Monthly Cost Trajectory</h3>
-            <span class="pill pill-amber">12-Month View</span>
-          </div>
-          <div class="chart-wrap" style="height:280px;">
-            <canvas id="pricingChart"></canvas>
-          </div>
-          <p class="text-xs text-slate-600 mt-4 text-center">QTech data from <a href="https://www.qtechsoftware.com/otrams-go-pricing/" target="_blank" class="source-link">OTRAMS Go Pricing page</a>. ZentrumHub model is illustrative flat-rate.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- MAPPING ROI -->
-<section id="mapping" class="py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-14 fade-in">
-      <p class="pill pill-red mx-auto mb-4" style="width:fit-content;background:rgba(239,68,68,0.12);color:#fca5a5;border-color:rgba(239,68,68,0.3);">The Hidden Cost</p>
-      <h2 class="font-display font-700 text-4xl md:text-5xl mb-4">One mapping error.<br/><span class="grad-text">€1,500 in smoke.</span></h2>
-      <p class="text-slate-500 max-w-2xl mx-auto">
-        In a market like Germany, a single <a href="https://www.altexsoft.com/blog/hotel-mapping-tools-how-giata-gimmonix-databindr-and-other-solutions-work/" target="_blank" class="source-link">hotel mapping error costs an OTA approximately €1,500</a> — covering cancellations, rebooking at last-minute rates, transfers, and operational overhead. With an average tour price of €2,700, that's 55% of revenue destroyed by a data mismatch.
-      </p>
-    </div>
-
-    <div class="grid md:grid-cols-3 gap-8 items-center">
-      <!-- DONUT CHART -->
-      <div class="fade-in md:col-span-1">
-        <div class="glow-border" style="border-radius:20px;padding:28px;background:rgba(15,23,42,0.8);">
-          <h3 class="font-display font-600 text-slate-200 mb-6 text-center">Cost Breakdown<br/>of 1 Mapping Error</h3>
-          <div class="chart-wrap" style="height:220px;position:relative;">
-            <canvas id="mappingDonut"></canvas>
-            <div class="donut-center">
-              <div class="font-display font-800 text-2xl text-red-400">€1,500</div>
-              <div class="text-xs text-slate-500">total loss</div>
-            </div>
-          </div>
-          <div class="mt-4 space-y-2">
-            <div class="flex items-center gap-2 text-xs text-slate-400"><span style="width:10px;height:10px;border-radius:2px;background:#ef4444;display:inline-block;flex-shrink:0"></span>Cancellation fees</div>
-            <div class="flex items-center gap-2 text-xs text-slate-400"><span style="width:10px;height:10px;border-radius:2px;background:#f97316;display:inline-block;flex-shrink:0"></span>Last-minute rebook premium</div>
-            <div class="flex items-center gap-2 text-xs text-slate-400"><span style="width:10px;height:10px;border-radius:2px;background:#eab308;display:inline-block;flex-shrink:0"></span>Transfer costs</div>
-            <div class="flex items-center gap-2 text-xs text-slate-400"><span style="width:10px;height:10px;border-radius:2px;background:#8b5cf6;display:inline-block;flex-shrink:0"></span>Operational overhead</div>
-          </div>
-          <p class="text-xs text-slate-600 mt-4 text-center"><a href="https://www.altexsoft.com/blog/hotel-mapping-tools-how-giata-gimmonix-databindr-and-other-solutions-work/" target="_blank" class="source-link">AltexSoft Hotel Mapping Analysis</a></p>
-        </div>
-      </div>
-
-      <!-- COMPARISON CARDS -->
-      <div class="md:col-span-2 fade-in" style="transition-delay:0.2s">
-        <div class="grid gap-4">
-          <div class="stat-card">
-            <div class="flex items-start gap-4">
-              <div class="icon-circle">🗺️</div>
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="font-display font-600 text-white">ZentrumHub</span>
-                  <span class="pill pill-green" style="font-size:0.65rem;">Integrated</span>
-                </div>
-                <p class="text-slate-400 text-sm leading-relaxed">
-                  <a href="https://www.getapp.com/hospitality-travel-software/a/zentrum-booking-engine/" target="_blank" class="source-link">Integrated hotel-room mapping</a> ships as part of the unified API contract — no separate third-party tool purchase required. Single contract, unified response, zero duplication overhead.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div style="background:rgba(30,41,59,0.5);border:1px solid rgba(51,65,85,0.4);border-radius:16px;padding:20px 22px;">
-            <div class="flex items-start gap-4">
-              <div style="width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(30,41,59,0.8);border:1px solid rgba(51,65,85,0.5);font-size:1.3rem;flex-shrink:0;">⚙️</div>
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="font-display font-600 text-slate-300">Gimmonix (Mapping.Works)</span>
-                  <span class="pill pill-amber" style="font-size:0.65rem;">Add-on Cost</span>
-                </div>
-                <p class="text-slate-500 text-sm leading-relaxed">
-                  <a href="https://www.altexsoft.com/blog/hotel-mapping-tools-how-giata-gimmonix-databindr-and-other-solutions-work/" target="_blank" class="source-link">Hybrid human-AI approach with 80% reduction in manual effort</a>, but requires separate integration and per-unit pricing. Processes listings in under 24 hours via FTP upload.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div style="background:rgba(30,41,59,0.5);border:1px solid rgba(51,65,85,0.4);border-radius:16px;padding:20px 22px;">
-            <div class="flex items-start gap-4">
-              <div style="width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(30,41,59,0.8);border:1px solid rgba(51,65,85,0.5);font-size:1.3rem;flex-shrink:0;">🔬</div>
-              <div>
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="font-display font-600 text-slate-300">Juniper (Vervotech)</span>
-                  <span class="pill pill-amber" style="font-size:0.65rem;">Deep Learning</span>
-                </div>
-                <p class="text-slate-500 text-sm leading-relaxed">
-                  <a href="https://www.altexsoft.com/blog/hotel-mapping-tools-how-giata-gimmonix-databindr-and-other-solutions-work/" target="_blank" class="source-link">Uses deep learning to normalize data from 400+ suppliers in real-time</a>, achieving 99.999% accuracy. Powerful but bundled into Juniper's premium ecosystem pricing.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- STRATEGY -->
-<section id="strategy" class="py-20 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-14 fade-in">
-      <p class="pill pill-pink mx-auto mb-4" style="width:fit-content">Strategic Playbook</p>
-      <h2 class="font-display font-700 text-4xl md:text-5xl mb-4">Five moves to<br/><span class="grad-text">own the decade</span></h2>
-      <p class="text-slate-500 max-w-xl mx-auto">Strategic recommendations derived from competitive analysis to accelerate ZentrumHub's market leadership.</p>
-    </div>
-
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="stat-card glow-border fade-in" style="transition-delay:0s">
-        <div class="text-3xl mb-4">💰</div>
-        <div class="font-display font-700 text-white text-lg mb-3">The Error-Reduction ROI</div>
-        <p class="text-slate-400 text-sm leading-relaxed mb-4">
-          Tie subscription cost directly to the prevention of <a href="https://www.altexsoft.com/blog/hotel-mapping-tools-how-giata-gimmonix-databindr-and-other-solutions-work/" target="_blank" class="source-link">€1,500 mapping errors</a>. Publish a cost-savings calculator that uses booking volume and industry-standard error rates to reposition ZentrumHub as the "Lowest Total Cost" provider.
-        </p>
-        <span class="pill pill-green">Positioning play</span>
-      </div>
-
-      <div class="stat-card glow-border fade-in" style="transition-delay:0.1s">
-        <div class="text-3xl mb-4">🧑‍💻</div>
-        <div class="font-display font-700 text-white text-lg mb-3">Target the Developer Persona</div>
-        <p class="text-slate-400 text-sm leading-relaxed mb-4">
-          <a href="https://www.softwareadvice.com/hotel-management/zentrum-booking-engine-profile/" target="_blank" class="source-link">User reviews cite ZentrumHub's modern REST JSON API</a> over legacy SOAP XML as a primary driver. Invest in documentation, sandboxes, and DX tooling — engineers are often the procurement gatekeepers.
-        </p>
-        <span class="pill pill-pink">Developer growth</span>
-      </div>
-
-      <div class="stat-card glow-border fade-in" style="transition-delay:0.2s">
-        <div class="text-3xl mb-4">🔧</div>
-        <div class="font-display font-700 text-white text-lg mb-3">Deepen Feature Parity</div>
-        <p class="text-slate-400 text-sm leading-relaxed mb-4">
-          Some users note <a href="https://crozdesk.com/software/zentrumhub-solutions-pvt-ltd" target="_blank" class="source-link">result filtering capabilities still maturing</a>. Prioritize advanced filters — carbon footprint, contactless, room attributes — to match what <a href="https://www.businessresearchinsights.com/market-reports/travel-technology-market-110253" target="_blank" class="source-link">North American and European markets</a> now consider standard.
-        </p>
-        <span class="pill pill-amber">Product depth</span>
-      </div>
-
-      <div class="stat-card glow-border fade-in" style="transition-delay:0.3s">
-        <div class="text-3xl mb-4">🌏</div>
-        <div class="font-display font-700 text-white text-lg mb-3">Dominate APAC First</div>
-        <p class="text-slate-400 text-sm leading-relaxed mb-4">
-          With <a href="https://www.technavio.com/report/travel-technologies-market-industry-analysis" target="_blank" class="source-link">India and Southeast Asia growing at 9.6% CAGR</a>, ZentrumHub's home-ground advantage is a strategic moat. Deeper integration with regional Super Apps and local payment rails creates barriers global competitors cannot replicate quickly.
-        </p>
-        <span class="pill pill-green">Geographic focus</span>
-      </div>
-
-      <div class="stat-card glow-border fade-in" style="transition-delay:0.4s">
-        <div class="text-3xl mb-4">📊</div>
-        <div class="font-display font-700 text-white text-lg mb-3">Transparent Cost Narrative</div>
-        <p class="text-slate-400 text-sm leading-relaxed mb-4">
-          Contrast ZentrumHub's flat model against <a href="https://www.qtechsoftware.com/otrams-go-pricing/" target="_blank" class="source-link">QTech's compounding 1.5% transaction fee</a>. A 12–24 month TCO comparison, shown visually, demonstrates that "expensive API" perception dissolves under scrutiny.
-        </p>
-        <span class="pill pill-pink">Narrative shift</span>
-      </div>
-
-      <div class="stat-card fade-in" style="transition-delay:0.5s;background:linear-gradient(135deg,rgba(123,45,139,0.2),rgba(233,30,140,0.15));border:1px solid rgba(233,30,140,0.35);">
-        <div class="text-3xl mb-4">🚀</div>
-        <div class="font-display font-700 text-white text-lg mb-3">The Bigger Picture</div>
-        <p class="text-slate-300 text-sm leading-relaxed mb-4">
-          <a href="https://www.marketreportsworld.com/market-reports/travel-technology-market-14715933" target="_blank" class="source-link">$6.8B+ is invested annually in travel tech ventures</a>. The future belongs to platforms that synthesize massive supplier connectivity with AI-driven normalization. ZentrumHub's 0.1s search and 99.99% uptime are the technical foundation — the enterprise ecosystem layer is next.
-        </p>
-        <span class="pill pill-green">Long-term vision</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="section-divider"></div>
-
-<!-- FOOTER -->
-<footer class="py-12 px-6">
-  <div class="max-w-7xl mx-auto">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-      <div>
-        <img src="data:image/jpeg;base64,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" alt="ZentrumHub" class="h-8 object-contain mb-2" onerror="this.style.display='none'"/>
-        <p class="text-slate-600 text-sm">Strategic Assessment · Global Competitive Intelligence · 2026</p>
-      </div>
-      <div class="flex flex-wrap gap-4 text-xs text-slate-600">
-        <a href="https://www.businessresearchinsights.com/market-reports/travel-technology-market-110253" target="_blank" class="source-link">Business Research Insights</a>
-        <a href="https://www.technavio.com/report/travel-technologies-market-industry-analysis" target="_blank" class="source-link">Technavio</a>
-        <a href="https://www.softwareadvice.com/hotel-management/zentrum-booking-engine-profile/" target="_blank" class="source-link">Software Advice</a>
-        <a href="https://www.altexsoft.com/blog/hotel-mapping-tools-how-giata-gimmonix-databindr-and-other-solutions-work/" target="_blank" class="source-link">AltexSoft</a>
-        <a href="https://ejuniper.com/en/buyers/" target="_blank" class="source-link">Juniper</a>
-        <a href="https://www.qtechsoftware.com/otrams-go-pricing/" target="_blank" class="source-link">QTech</a>
-      </div>
-    </div>
-  </div>
-</footer>
+    </section>
+</div>
 
 <script>
-// ---- CHARTS ----
-
-// 1. Market Growth Bar Chart
-let marketChart, pricingChart, donutChart;
-const marketCtx = document.getElementById('marketChart').getContext('2d');
-marketChart = new Chart(marketCtx, {
-  type: 'bar',
-  data: {
-    labels: ['North America', 'Europe', 'Global Avg', 'Middle East', 'Asia-Pacific'],
-    datasets: [{
-      label: 'CAGR %',
-      data: [7.5, 6.5, 7.55, 8.5, 9.6],
-      backgroundColor: [
-        'rgba(100,116,139,0.5)',
-        'rgba(100,116,139,0.5)',
-        'rgba(168,85,247,0.5)',
-        'rgba(100,116,139,0.5)',
-        'rgba(233,30,140,0.7)',
-      ],
-      borderColor: [
-        'rgba(100,116,139,0.8)',
-        'rgba(100,116,139,0.8)',
-        'rgba(168,85,247,0.9)',
-        'rgba(100,116,139,0.8)',
-        'rgba(233,30,140,1)',
-      ],
-      borderWidth: 2,
-      borderRadius: 8,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(15,23,42,0.95)',
-        borderColor: 'rgba(233,30,140,0.4)',
-        borderWidth: 1,
-        titleColor: '#f1f5f9',
-        bodyColor: '#94a3b8',
-        callbacks: { label: ctx => ` ${ctx.raw}% CAGR` }
-      }
-    },
-    scales: {
-      x: {
-        grid: { color: 'rgba(51,65,85,0.3)' },
-        ticks: { color: '#64748b', font: { size: 11 } }
-      },
-      y: {
-        grid: { color: 'rgba(51,65,85,0.3)' },
-        ticks: { color: '#64748b', callback: v => v + '%' },
-        min: 0, max: 12
-      }
+window.onload = function() {
+    // Safety check for Chart.js
+    if (typeof Chart === 'undefined') {
+        const errorMsg = document.createElement('div');
+        errorMsg.className = "bg-red-500 text-white p-4 fixed bottom-4 right-4 rounded-lg shadow-lg z-50";
+        errorMsg.innerText = "Error: Charting library failed to load. Please check your internet connection.";
+        document.body.appendChild(errorMsg);
+        return;
     }
-  }
-});
 
-// 2. Pricing Line Chart
-const pricingCtx = document.getElementById('pricingChart').getContext('2d');
-const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-// QTech: $750 + 1.5% of growing booking volume (starting $200K, growing 10%/mo)
-const qtechCosts = months.map((_, i) => {
-  const volume = 200000 * Math.pow(1.1, i);
-  return Math.round(750 + volume * 0.015);
-});
-// ZentrumHub: flat illustrative premium
-const zhCosts = months.map(() => 2400);
+    // Colors
+    const colors = {
+        zentrumHub: '#2563eb',
+        juniper: '#ea580c',
+        travelgateX: '#0d9488',
+        qtech: '#9333ea',
+        dcsPlus: '#475569',
+        gimmonix: '#facc15'
+    };
 
-pricingChart = new Chart(pricingCtx, {
-  type: 'line',
-  data: {
-    labels: months,
-    datasets: [
-      {
-        label: 'QTech (OTRAMS) — $750 + 1.5% fee',
-        data: qtechCosts,
-        borderColor: '#ef4444',
-        backgroundColor: 'rgba(239,68,68,0.08)',
-        borderWidth: 2.5,
-        pointRadius: 4,
-        pointBackgroundColor: '#ef4444',
-        fill: true,
-        tension: 0.4
-      },
-      {
-        label: 'ZentrumHub — Flat Premium',
-        data: zhCosts,
-        borderColor: '#e91e8c',
-        backgroundColor: 'rgba(233,30,140,0.08)',
-        borderWidth: 2.5,
-        pointRadius: 4,
-        pointBackgroundColor: '#e91e8c',
-        fill: true,
-        tension: 0.4,
-        borderDash: [6, 3]
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: { color: '#94a3b8', font: { size: 11 }, boxWidth: 16, padding: 16 }
-      },
-      tooltip: {
-        backgroundColor: 'rgba(15,23,42,0.95)',
-        borderColor: 'rgba(233,30,140,0.4)',
-        borderWidth: 1,
-        titleColor: '#f1f5f9',
-        bodyColor: '#94a3b8',
-        callbacks: {
-          label: ctx => ` $${ctx.raw.toLocaleString()}/mo`
+    // RADAR CHART
+    const radarCtx = document.getElementById('multiRadarChart').getContext('2d');
+    new Chart(radarCtx, {
+        type: 'radar',
+        data: {
+            labels: ['API Modernity', 'Deployment Speed', 'Cost Affordability', 'Enterprise Stability', 'Legacy Compatibility', 'Customization'],
+            datasets: [
+                { label: 'ZentrumHub', data: [95, 98, 30, 70, 40, 95], borderColor: colors.zentrumHub, backgroundColor: 'rgba(37, 99, 235, 0.1)', borderWidth: 3 },
+                { label: 'Juniper', data: [40, 20, 30, 95, 98, 60], borderColor: colors.juniper, backgroundColor: 'rgba(234, 88, 12, 0.1)', borderWidth: 2 },
+                { label: 'TravelgateX', data: [90, 85, 60, 90, 60, 50], borderColor: colors.travelgateX, backgroundColor: 'rgba(13, 148, 136, 0.1)', borderWidth: 2 },
+                { label: 'QTech', data: [65, 70, 85, 75, 70, 75], borderColor: colors.qtech, backgroundColor: 'rgba(147, 51, 234, 0.1)', borderWidth: 2 },
+                { label: 'dcs plus', data: [55, 50, 40, 85, 90, 80], borderColor: colors.dcsPlus, backgroundColor: 'rgba(71, 85, 105, 0.1)', borderWidth: 2 },
+                { label: 'Gimmonix', data: [80, 75, 75, 65, 50, 40], borderColor: colors.gimmonix, backgroundColor: 'rgba(250, 204, 21, 0.1)', borderWidth: 2 }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                r: { min: 0, max: 100, ticks: { display: false }, pointLabels: { font: { weight: 'bold', size: 10 } } }
+            },
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 15 } } }
         }
-      }
-    },
-    scales: {
-      x: {
-        grid: { color: 'rgba(51,65,85,0.3)' },
-        ticks: { color: '#64748b', font: { size: 11 } }
-      },
-      y: {
-        grid: { color: 'rgba(51,65,85,0.3)' },
-        ticks: { color: '#64748b', callback: v => '$' + (v/1000).toFixed(0) + 'K' }
-      }
-    }
-  }
-});
-
-// 3. Mapping Error Donut
-const donutCtx = document.getElementById('mappingDonut').getContext('2d');
-donutChart = new Chart(donutCtx, {
-  type: 'doughnut',
-  data: {
-    labels: ['Cancellation fees', 'Last-minute rebook', 'Transfer costs', 'Operational overhead'],
-    datasets: [{
-      data: [350, 700, 250, 200],
-      backgroundColor: ['#ef4444','#f97316','#eab308','#8b5cf6'],
-      borderColor: 'rgba(15,23,42,0.8)',
-      borderWidth: 3,
-      hoverOffset: 8
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: '68%',
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(15,23,42,0.95)',
-        borderColor: 'rgba(233,30,140,0.4)',
-        borderWidth: 1,
-        titleColor: '#f1f5f9',
-        bodyColor: '#94a3b8',
-        callbacks: {
-          label: ctx => ` €${ctx.raw} — ${ctx.label}`
-        }
-      }
-    }
-  }
-});
-
-// ---- FADE IN ON SCROLL ----
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-    }
-  });
-}, { threshold: 0.1 });
-document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-// ---- THEME TOGGLE ----
-const toggleBtn = document.getElementById('theme-toggle');
-let isLight = localStorage.getItem('zh-theme') === 'light';
-
-function applyTheme(light) {
-  document.body.classList.toggle('light-mode', light);
-  toggleBtn.textContent = light ? '🌙' : '☀️';
-  const c = light
-    ? { grid:'rgba(203,213,225,0.5)', tick:'#94a3b8', tooltipBg:'rgba(255,255,255,0.97)', tooltipTitle:'#1e293b', tooltipBody:'#475569', donutBorder:'rgba(248,250,252,0.9)' }
-    : { grid:'rgba(51,65,85,0.3)',    tick:'#64748b', tooltipBg:'rgba(15,23,42,0.95)',    tooltipTitle:'#f1f5f9', tooltipBody:'#94a3b8', donutBorder:'rgba(15,23,42,0.8)' };
-  [marketChart, pricingChart, donutChart].forEach(chart => {
-    if (!chart) return;
-    if (chart.options.plugins?.tooltip) {
-      Object.assign(chart.options.plugins.tooltip, { backgroundColor: c.tooltipBg, titleColor: c.tooltipTitle, bodyColor: c.tooltipBody });
-    }
-    ['x','y'].forEach(axis => {
-      if (chart.options.scales?.[axis]) {
-        chart.options.scales[axis].grid.color = c.grid;
-        chart.options.scales[axis].ticks.color = c.tick;
-      }
     });
-    chart.update('none');
-  });
-  if (donutChart) { donutChart.data.datasets[0].borderColor = c.donutBorder; donutChart.update('none'); }
-}
 
-// Apply saved theme on load (CSS only - charts not yet created)
-if (isLight) {
-  document.body.classList.add('light-mode');
-  toggleBtn.textContent = '🌙';
-}
-
-toggleBtn.addEventListener('click', () => {
-  isLight = !isLight;
-  localStorage.setItem('zh-theme', isLight ? 'light' : 'dark');
-  applyTheme(isLight);
-});
+    // SCATTER CHART
+    const scatterCtx = document.getElementById('positioningChart').getContext('2d');
+    new Chart(scatterCtx, {
+        type: 'scatter',
+        data: {
+            datasets: [
+                { label: 'ZentrumHub', data: [{x: 95, y: 85}], backgroundColor: colors.zentrumHub, pointRadius: 15 },
+                { label: 'Juniper', data: [{x: 25, y: 90}], backgroundColor: colors.juniper, pointRadius: 15 },
+                { label: 'TravelgateX', data: [{x: 88, y: 55}], backgroundColor: colors.travelgateX, pointRadius: 12 },
+                { label: 'QTech', data: [{x: 65, y: 40}], backgroundColor: colors.qtech, pointRadius: 12 },
+                { label: 'dcs plus', data: [{x: 45, y: 65}], backgroundColor: colors.dcsPlus, pointRadius: 12 },
+                { label: 'Gimmonix', data: [{x: 75, y: 50}], backgroundColor: colors.gimmonix, pointRadius: 12 }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                x: { title: { display: true, text: 'Agility & Speed-to-Market (%)' }, min: 0, max: 100 },
+                y: { title: { display: true, text: 'Total Implementation Cost (%)' }, min: 0, max: 100 }
+            },
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10 } } }
+        }
+    });
+};
 </script>
 </body>
 </html>
